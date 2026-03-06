@@ -60,5 +60,5 @@ type UserId = number;
 type StringOrNull = string | null;
 let userId1: UserId = 10;
 
-let texto: StringOrNull = null;
-texto = "hola mundo";
+let texto1: StringOrNull = null;
+texto1 = "hola mundo";
