@@ -1,44 +1,40 @@
-import prisma from "../lib/prisma";
-
-interface Product {
-  name?: string;
-  price?: number;
-  stock?: number;
-  description?: string;
-  categoryId?: number;
-}
+import { prisma } from "../lib/prisma";
+import {
+  productsCreateInput,
+  productsUpdateInput,
+} from "../generated/prisma/models";
 
 export class ProductService {
   async getAll() {
-    return await prisma.product.findMany({
-      include: { category: true },
-      orderBy: { createadAt: "desc" },
+    return await prisma.products.findMany({
+      include: { categories: true },
+      orderBy: { createdAt: "desc" },
     });
   }
 
   async getById(id: number) {
-    return await prisma.product.findUnique({
+    return await prisma.products.findUnique({
       where: { id },
-      include: { category: true },
+      include: { categories: true },
     });
   }
 
-  async create(data: Product) {
-    return await prisma.product.create({
+  async create(data: productsCreateInput) {
+    return await prisma.products.create({
       data,
-      include: { category: true },
+      include: { categories: true },
     });
   }
 
-  async update(id: number, data: Product) {
-    return await prisma.product.update({
+  async update(id: number, data: productsUpdateInput) {
+    return await prisma.products.update({
       where: { id },
       data,
-      include: { category: true },
+      include: { categories: true },
     });
   }
 
   async destroy(id: number) {
-    return await prisma.product.delete({ where: { id } });
+    return await prisma.products.delete({ where: { id } });
   }
 }

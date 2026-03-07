@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
-    "@prisma/client": "^6.19.2",
+    "@prisma/adapter-pg": "^7.4.2",
+    "@prisma/client": "^7.4.2",
+    "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "pg": "^8.20.0",
     "undici-types": "^7.18.2"
   },
   "scripts": {
@@ -19,7 +22,8 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.3.5",
+    "@types/pg": "^8.18.0",
     "nodemon": "^3.1.14",
-    "prisma": "^6.19.2"
+    "prisma": "^7.4.2"
   }
 }
