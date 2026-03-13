@@ -219,7 +219,11 @@ const options: swaggerJsdoc.Options = {
           properties: {
             id: { type: "integer", example: 1 },
             username: { type: "string", example: "john_doe" },
-            email: { type: "string", format: "email", example: "john@example.com" },
+            email: {
+              type: "string",
+              format: "email",
+              example: "john@example.com",
+            },
             rol: { type: "string", example: "USER" },
           },
         },
@@ -232,7 +236,11 @@ const options: swaggerJsdoc.Options = {
               properties: {
                 id: { type: "integer", example: 1 },
                 username: { type: "string", example: "john_doe" },
-                email: { type: "string", format: "email", example: "john@example.com" },
+                email: {
+                  type: "string",
+                  format: "email",
+                  example: "john@example.com",
+                },
                 rol: { type: "string", example: "USER" },
                 createdAt: {
                   type: "string",
@@ -268,7 +276,11 @@ const options: swaggerJsdoc.Options = {
               properties: {
                 id: { type: "integer", example: 1 },
                 username: { type: "string", example: "john_doe" },
-                email: { type: "string", format: "email", example: "john@example.com" },
+                email: {
+                  type: "string",
+                  format: "email",
+                  example: "john@example.com",
+                },
                 rol: { type: "string", example: "USER" },
                 orders: { type: "array", items: { type: "object" } },
                 createdAt: {
@@ -611,7 +623,9 @@ const options: swaggerJsdoc.Options = {
               description: "Lista de categorías obtenida exitosamente",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/CategorySuccessListResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/CategorySuccessListResponse",
+                  },
                 },
               },
             },
@@ -643,7 +657,9 @@ const options: swaggerJsdoc.Options = {
               description: "Categoría creada exitosamente",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/CategorySuccessItemResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/CategorySuccessItemResponse",
+                  },
                 },
               },
             },
@@ -680,7 +696,9 @@ const options: swaggerJsdoc.Options = {
               description: "Categoría encontrada exitosamente",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/CategorySuccessItemResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/CategorySuccessItemResponse",
+                  },
                 },
               },
             },
@@ -688,7 +706,9 @@ const options: swaggerJsdoc.Options = {
               description: "Categoría no encontrada",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/CategoryNotFoundResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/CategoryNotFoundResponse",
+                  },
                 },
               },
             },
@@ -730,7 +750,9 @@ const options: swaggerJsdoc.Options = {
               description: "Categoría actualizada exitosamente",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/CategorySuccessItemResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/CategorySuccessItemResponse",
+                  },
                 },
               },
             },
@@ -747,8 +769,7 @@ const options: swaggerJsdoc.Options = {
         delete: {
           summary: "Eliminar una categoría",
           tags: ["Categories"],
-          description:
-            "Elimina permanentemente una categoría usando su ID.",
+          description: "Elimina permanentemente una categoría usando su ID.",
           parameters: [
             {
               in: "path",
@@ -764,7 +785,9 @@ const options: swaggerJsdoc.Options = {
               description: "Categoría eliminada exitosamente",
               content: {
                 "application/json": {
-                  schema: { $ref: "#/components/schemas/CategoryDeleteResponse" },
+                  schema: {
+                    $ref: "#/components/schemas/CategoryDeleteResponse",
+                  },
                 },
               },
             },
