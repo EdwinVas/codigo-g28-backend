@@ -1,0 +1,50 @@
+import type { Response } from "express";
+import type { AuthRequest } from "../middleware/auth.middleware";
+import { OrderService } from "../services/order.service";
+
+const service = new OrderService();
+
+export class OrderController {
+  async getAll(req: AuthRequest, res: Response) {
+    try {
+      const orders = await service.getAll();
+      res.json({ ok: true, data: orders });
+    } catch (error: any) {
+      res.status(500).json({ ok: false, error: error.message });
+    }
+  }
+
+  async getById(req: AuthRequest, res: Response) {
+    try {
+      const id = Number(req.params.id);
+      const order = await service.getById(id);
+
+      if (!order) {
+        return res.status(404).json({ ok: false, data: "Order not found" });
+      }
+
+      res.json({ ok: true, data: order });
+    } catch (error: any) {
+      res.status(500).json({ ok: false, error: error.message });
+    }
+  }
+
+  async create(req: AuthRequest, res: Response) {
+    try {
+      const userId = req.user?.id;
+      const { items } = req.body;
+
+      if (!items || !Array.isArray(items) || items.length === 0) {
+        return res.status(400).json({
+          ok: false,
+          data: "Se require al menos 1 item para crear la orden.",
+        });
+      }
+
+      const order = await service.create(userId!, items);
+      res.status(201).json({ ok: true, data: order });
+    } catch (error: any) {
+      res.status(500).json({ ok: false, error: error.message });
+    }
+  }
+}
