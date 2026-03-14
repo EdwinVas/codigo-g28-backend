@@ -5,11 +5,13 @@ import productRoutes from "./routes/product.routes";
 import categoryRoutes from "./routes/category.routes";
 import authRoutes from "./routes/auth.routes";
 import orderRoutes from "./routes/order.routes";
+import CORS from "cors";
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use(CORS());
 
 // ─── Swagger UI ────────────────────────────────────────────────────────────
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
