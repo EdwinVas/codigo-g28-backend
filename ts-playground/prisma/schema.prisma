@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -29,6 +29,7 @@ model orders {
   total       Decimal       @db.Decimal(10, 2)
   status      OrderStatus   @default(PENDING)
   createdAt   DateTime      @default(now())
+  deletedAt   DateTime?
   userId      Int
   order_items order_items[]
   users       users         @relation(fields: [userId], references: [id])
