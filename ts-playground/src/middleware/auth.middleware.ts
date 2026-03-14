@@ -39,3 +39,18 @@ export function authMiddleware(
     return res.status(401).json({ ok: false, message: "Token expirado" });
   }
 }
+
+export function requiredRoles(...roles: Roles[]) {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
+    const userRole = req.user?.rol;
+
+    if (!userRole || !roles.includes(userRole)) {
+      return res.status(403).json({
+        ok: false,
+        message: "No tienes permisos para esta acción.",
+      });
+    }
+
+    next();
+  };
+}
