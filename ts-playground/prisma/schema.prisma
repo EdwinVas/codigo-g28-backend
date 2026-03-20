@@ -25,14 +25,17 @@ model order_items {
 }
 
 model orders {
-  id          Int           @id @default(autoincrement())
-  total       Decimal       @db.Decimal(10, 2)
-  status      OrderStatus   @default(PENDING)
-  createdAt   DateTime      @default(now())
-  deletedAt   DateTime?
-  userId      Int
-  order_items order_items[]
-  users       users         @relation(fields: [userId], references: [id])
+  id             Int           @id @default(autoincrement())
+  total          Decimal       @db.Decimal(10, 2)
+  status         OrderStatus   @default(PENDING)
+  mpPreferenceId String?
+  mpPaymentId    String?
+  mpStatus       String?
+  createdAt      DateTime      @default(now())
+  deletedAt      DateTime?
+  userId         Int
+  order_items    order_items[]
+  users          users         @relation(fields: [userId], references: [id])
 }
 
 model products {
