@@ -84,7 +84,43 @@ export class PaymentService {
     };
   }
 
-  async handleWebhook() {}
+  async handleWebhook(paymentId: string) {
+    const payment = await paymentApi.get({ id: paymentId });
+    const orderId = Number(payment.external_reference);
+    const mpStatus = payment.status;
 
-  async getPaymentStatus() {}
+    if (!orderId || isNaN(orderId)) {
+      throw new Error("external_reference invalido.");
+    }
+
+    const orderStatus =
+      mpStatus === "approved"
+        ? "COMPLETED"
+        : mpStatus === "rejected" || mpStatus === "cancelled"
+          ? "CANCELLED"
+          : "PENDING";
+
+    await prisma.orders.update({
+      where: { id: orderId },
+      data: {
+        status: orderStatus,
+        mpPaymentId: String(payment.id),
+        mpStatus: mpStatus ?? null,
+      },
+    });
+
+    return { orderId, mpStatus, orderStatus };
+  }
+
+  async getPaymentStatus(paymentId: string) {
+    const payment = await paymentApi.get({ id: paymentId });
+
+    return {
+      id: payment.id,
+      status: payment.status,
+      statusDetail: payment.status_detail,
+      externalReference: payment.external_reference,
+      amount: payment.transaction_amount,
+    };
+  }
 }
