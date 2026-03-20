@@ -25,6 +25,8 @@ export class PaymentController {
 
       res.json({ ok: true, data: result });
     } catch (error: any) {
+      console.log("ERROR");
+      console.log(JSON.stringify(error, null, 2));
       res.status(500).json({ ok: false, message: error.message });
     }
   }

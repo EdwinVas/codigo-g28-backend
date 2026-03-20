@@ -31,6 +31,8 @@ export class PaymentService {
       },
     });
 
+    console.log(JSON.stringify(order, null, 2));
+
     // verificar que la orden exista
     if (!order) throw new Error("Orden no encontrada.");
     // verificar que la orden este asociado a un usuario
@@ -57,13 +59,13 @@ export class PaymentService {
         items,
         payer: { email: userEmail },
         external_reference: String(order.id),
+        auto_return: "all",
         back_urls: {
           success: `${process.env.FRONT_URL}/payment/success`,
           pending: `${process.env.FRONT_URL}/payment/pending`,
           failure: `${process.env.FRONT_URL}/payment/failure`,
         },
-        auto_return: "approved",
-        notification_url: `${process.env.BACK_URL}/api/payment/webhook`,
+        notification_url: `${process.env.BACK_URL}/api/payments/webhook`,
         statement_descriptor: "G28 Shop",
         metadata: {
           order_id: orderId,
@@ -71,6 +73,8 @@ export class PaymentService {
         },
       },
     });
+
+    console.log(response);
 
     await prisma.orders.update({
       where: { id: orderId },

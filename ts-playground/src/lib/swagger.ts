@@ -439,6 +439,67 @@ const options: swaggerJsdoc.Options = {
             },
           },
         },
+
+        // ── Payments schemas ─────────────────────────────────────────────────
+        PaymentPreferenceInput: {
+          type: "object",
+          required: ["orderId"],
+          properties: {
+            orderId: { type: "integer", example: 1 },
+          },
+        },
+        PaymentPreferenceResponse: {
+          type: "object",
+          properties: {
+            ok: { type: "boolean", example: true },
+            data: {
+              type: "object",
+              properties: {
+                preferenceId: { type: "string", example: "12345678-abcd-..." },
+                initPoint: {
+                  type: "string",
+                  example:
+                    "https://www.mercadopago.com.pe/checkout/v1/redirect?pref_id=...",
+                },
+                sandBoxInitPoint: {
+                  type: "string",
+                  example:
+                    "https://sandbox.mercadopago.com.pe/checkout/v1/redirect?pref_id=...",
+                },
+              },
+            },
+          },
+        },
+        PaymentWebhookResponse: {
+          type: "object",
+          properties: {
+            ok: { type: "boolean", example: true },
+            data: {
+              type: "object",
+              properties: {
+                orderId: { type: "integer", example: 1 },
+                mpStatus: { type: "string", example: "approved" },
+                orderStatus: { type: "string", example: "COMPLETED" },
+              },
+            },
+          },
+        },
+        PaymentStatusResponse: {
+          type: "object",
+          properties: {
+            ok: { type: "boolean", example: true },
+            data: {
+              type: "object",
+              properties: {
+                id: { type: "integer", example: 123456789 },
+                status: { type: "string", example: "approved" },
+                statusDetail: { type: "string", example: "accredited" },
+                externalReference: { type: "string", example: "1" },
+                amount: { type: "number", format: "float", example: 1299.99 },
+              },
+            },
+          },
+        },
       },
 
       // ── Security schemes ───────────────────────────────────────────────────
@@ -1112,7 +1173,8 @@ const options: swaggerJsdoc.Options = {
           ],
           responses: {
             200: {
-              description: "Orden archivada exitosamente (deletedAt actualizado)",
+              description:
+                "Orden archivada exitosamente (deletedAt actualizado)",
               content: {
                 "application/json": {
                   schema: {
@@ -1294,6 +1356,147 @@ const options: swaggerJsdoc.Options = {
               content: {
                 "application/json": {
                   schema: { $ref: "#/components/schemas/ForbiddenResponse" },
+                },
+              },
+            },
+            500: {
+              description: "Error interno del servidor",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      // ── Payments ─────────────────────────────────────────────────────────
+      "/api/payments/preference": {
+        post: {
+          summary: "Crear preferencia de pago",
+          tags: ["Payments"],
+          description:
+            "Crea una nueva preferencia de pago de MercadoPago para una orden específica mediante su `orderId`. **Requiere token JWT.**",
+          security: [{ BearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/PaymentPreferenceInput" },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: "Preferencia creada exitosamente",
+              content: {
+                "application/json": {
+                  schema: {
+                    $ref: "#/components/schemas/PaymentPreferenceResponse",
+                  },
+                },
+              },
+            },
+            400: {
+              description: "Petición inválida (ej. orderId faltante)",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorResponse" },
+                },
+              },
+            },
+            401: {
+              description: "No autorizado — token ausente, inválido o expirado",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/UnauthorizedResponse" },
+                },
+              },
+            },
+            500: {
+              description: "Error interno del servidor",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      "/api/payments/webhook": {
+        post: {
+          summary: "Webhook de MercadoPago",
+          tags: ["Payments"],
+          description:
+            "Endpoint donde MercadoPago notifica cambios de estado en un pago y actualiza el estado de la respectiva orden.",
+          responses: {
+            200: {
+              description:
+                "Webhook procesado exitosamente o ignorado si el tipo no es 'payment'",
+              content: {
+                "application/json": {
+                  schema: {
+                    $ref: "#/components/schemas/PaymentWebhookResponse",
+                  },
+                },
+              },
+            },
+            400: {
+              description: "Petición inválida (payment id faltante)",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorResponse" },
+                },
+              },
+            },
+            500: {
+              description: "Error interno del servidor",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      "/api/payments/status/{paymentId}": {
+        get: {
+          summary: "Obtener estado de un pago",
+          tags: ["Payments"],
+          description:
+            "Consulta el estado actual de un pago directamente a MercadoPago mediante su `paymentId`. **Requiere token JWT.**",
+          security: [{ BearerAuth: [] }],
+          parameters: [
+            {
+              in: "path",
+              name: "paymentId",
+              required: true,
+              schema: { type: "string" },
+              description: "ID del pago proporcionado por MercadoPago",
+              example: "1234567890",
+            },
+          ],
+          responses: {
+            200: {
+              description: "Estado del pago obtenido exitosamente",
+              content: {
+                "application/json": {
+                  schema: {
+                    $ref: "#/components/schemas/PaymentStatusResponse",
+                  },
+                },
+              },
+            },
+            401: {
+              description: "No autorizado — token ausente, inválido o expirado",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/UnauthorizedResponse" },
                 },
               },
             },
