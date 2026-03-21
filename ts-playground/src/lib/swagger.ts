@@ -500,6 +500,45 @@ const options: swaggerJsdoc.Options = {
             },
           },
         },
+
+        // ── Stripe schemas ───────────────────────────────────────────────────
+        StripeCheckoutInput: {
+          type: "object",
+          required: ["orderId"],
+          properties: {
+            orderId: { type: "integer", example: 1 },
+          },
+        },
+        StripeCheckoutResponse: {
+          type: "object",
+          properties: {
+            ok: { type: "boolean", example: true },
+            data: {
+              type: "object",
+              properties: {
+                sessionId: { type: "string", example: "cs_test_a1b2c3d4..." },
+                url: {
+                  type: "string",
+                  example: "https://checkout.stripe.com/pay/cs_test_a1b2c3d4...",
+                },
+              },
+            },
+          },
+        },
+        StripeWebhookResponse: {
+          type: "object",
+          properties: {
+            ok: { type: "boolean", example: true },
+            data: {
+              type: "object",
+              properties: {
+                orderId: { type: "integer", example: 1 },
+                stripeStatus: { type: "string", example: "paid" },
+                orderStatus: { type: "string", example: "COMPLETED" },
+              },
+            },
+          },
+        },
       },
 
       // ── Security schemes ───────────────────────────────────────────────────
@@ -1497,6 +1536,107 @@ const options: swaggerJsdoc.Options = {
               content: {
                 "application/json": {
                   schema: { $ref: "#/components/schemas/UnauthorizedResponse" },
+                },
+              },
+            },
+            500: {
+              description: "Error interno del servidor",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      // ── Stripe ───────────────────────────────────────────────────────────
+      "/api/stripe/checkout": {
+        post: {
+          summary: "Crear una sesión de Checkout de Stripe",
+          tags: ["Stripe"],
+          description:
+            "Crea una sesión de pago en Stripe para una orden especificada y devuelve la URL de pago. **Requiere token JWT.**",
+          security: [{ BearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/StripeCheckoutInput" },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: "Sesión de Checkout creada exitosamente",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/StripeCheckoutResponse" },
+                },
+              },
+            },
+            400: {
+              description:
+                "Petición inválida (ej. orderId faltante o la orden no pertenece al usuario)",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorResponse" },
+                },
+              },
+            },
+            401: {
+              description: "No autorizado — token ausente, inválido o expirado",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/UnauthorizedResponse" },
+                },
+              },
+            },
+            500: {
+              description: "Error interno del servidor",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
+
+      "/api/stripe/webhook": {
+        post: {
+          summary: "Webhook de Stripe",
+          tags: ["Stripe"],
+          description:
+            "Endpoint donde Stripe notifica eventos de pagos (como checkout.session.completed) y actualiza el estado de la orden correspondiente.",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { type: "object" },
+                description:
+                  "Cuerpo de la petición (JSON crudo o raw) enviado por Stripe",
+              },
+            },
+          },
+          responses: {
+            200: {
+              description:
+                "Webhook procesado exitosamente o ignorado si el tipo no es 'checkout.session.completed'",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/StripeWebhookResponse" },
+                },
+              },
+            },
+            400: {
+              description:
+                "Petición inválida (ej. falta la firma o la firma es inválida)",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/ErrorResponse" },
                 },
               },
             },
