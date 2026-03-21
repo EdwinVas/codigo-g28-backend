@@ -4,7 +4,6 @@ import { prisma } from "../lib/prisma";
 // Init a MP
 const mpClient = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN as string,
-  options: { timeout: 5000 },
 });
 
 const preferenceApi = new Preference(mpClient);
@@ -59,7 +58,7 @@ export class PaymentService {
         items,
         payer: { email: userEmail },
         external_reference: String(order.id),
-        auto_return: "all",
+        auto_return: "approved",
         back_urls: {
           success: `${process.env.FRONT_URL}/payment/success`,
           pending: `${process.env.FRONT_URL}/payment/pending`,
@@ -90,6 +89,9 @@ export class PaymentService {
 
   async handleWebhook(paymentId: string) {
     const payment = await paymentApi.get({ id: paymentId });
+
+    console.log("------PAYMENT------");
+    console.log(payment);
     const orderId = Number(payment.external_reference);
     const mpStatus = payment.status;
 

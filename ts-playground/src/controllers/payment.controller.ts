@@ -34,6 +34,7 @@ export class PaymentController {
   async webhook(req: AuthRequest, res: Response) {
     try {
       const { type, data } = req.body;
+      console.log({ type, data });
 
       if (type !== "payment") {
         return res.sendStatus(200);
