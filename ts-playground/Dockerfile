@@ -2,7 +2,7 @@
 FROM node:24-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm i
+RUN npm i --include=dev
 COPY . .
 RUN npx prisma generate
 RUN npm run build
