@@ -49,6 +49,7 @@ model products {
   description String?
   price       Decimal       @db.Decimal(10, 2)
   stock       Int           @default(0)
+  imageKey    String?
   createdAt   DateTime      @default(now())
   categoryId  Int?
   order_items order_items[]
